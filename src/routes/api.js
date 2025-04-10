@@ -121,4 +121,42 @@ router.get('/order/:orderId/status', getOrderStatus);
 
 
 
+
+
+
+
+
+
+
+
+
+//store 
+
+import {
+  createStore,
+  updateStore,
+  getAllStoresWithDetails
+} from '../controller/storeController.js';
+
+router.post('/stores', createStore);         // Create store
+router.put('/stores/:id', updateStore);      // Update store
+router.get('/stores', getAllStoresWithDetails); // Get all with details (already exists)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 export default router;
