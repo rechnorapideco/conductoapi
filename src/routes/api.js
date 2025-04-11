@@ -6,46 +6,6 @@ import {
   resetPassword,
 } from "../controller/userController.js";
 
-const router = express.Router();
-
-router.post("/user/register", registerUser);
-router.post("/user/login", loginUser);
-router.post("/user/get-reset-otp", getResetOtp);
-router.post("/user/reset-password", resetPassword);
-
-
-
-
-//category
-
-
-
-
-
-import {
-  createCategory,
-  getAllCategories,
-  updateCategory,
-  getCategoriesByStore,
-} from '../controller/categoryController.js';
-
-// Category APIs
-router.post('/category', createCategory);
-router.get('/category', getAllCategories);
-router.put('/category/:id', updateCategory);
-router.get('/category/store/:storeId', getCategoriesByStore);
-
-
-
-
-
-
-
-
-
-
-
-//products
 import {
   createProduct,
   getAllProducts,
@@ -53,27 +13,24 @@ import {
   getProductsByStoreAndCategory,
   getTopRatedProducts,
   getBestSellingProducts,
-  getProductsByCategory
-} from '../controller/productController.js';
+  getProductsByCategory,
+} from "../controller/productController.js";
 
-// Product APIs
-router.post('/product', createProduct);
-router.get('/product', getAllProducts);
-router.put('/product/:id', updateProduct);
+import {
+  createOrder,
+  getOrdersByUser,
+  getActiveOrders,
+  cancelOrder,
+  getOrderStatus,
+} from "../controller/orderController.js";
+import { createBrand, getAllBrands } from "../controller/brandController.js";
+import { createOffer, getOffers } from "../controller/offerController.js";
 
-router.get('/product/store/:storeId/category/:categoryId', getProductsByStoreAndCategory);
-router.get('/product/top-rated', getTopRatedProducts);
-router.get('/product/best-selling', getBestSellingProducts);
-
-router.get('/product/category/:catId', getProductsByCategory);
-
-
-
-
-
-
-//filter
-
+import {
+  createStore,
+  updateStore,
+  getAllStoresWithDetails,
+} from "../controller/storeController.js";
 import {
   getCompaniesByStore,
   getCompaniesByCategory,
@@ -81,68 +38,139 @@ import {
   getTypesByStore,
   getTypesByCategory,
   getColorsByStore,
-  getSizesByStore
-} from '../controller/filterController.js';
+  getSizesByStore,
+} from "../controller/filterController.js";
+
+import {
+  createCategory,
+  getAllCategories,
+  updateCategory,
+  getCategoriesByStore,
+} from "../controller/categoryController.js";
+
+import { createAd, getAllAds } from '../controllers/adController.js';
+import {
+  createSlider1, getSlider1,
+  createSlider2, getSlider2,
+  createSlider3, getSlider3,
+  createSlider4, getSlider4
+} from '../controller/sliderController.js';
+
+
+const router = express.Router();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//user
+
+router.post("/user/register", registerUser);
+router.post("/user/login", loginUser);
+router.post("/user/get-reset-otp", getResetOtp);
+router.post("/user/reset-password", resetPassword);
+
+// Category APIs
+router.post("/category", createCategory);
+router.get("/category", getAllCategories);
+router.put("/category/:id", updateCategory);
+router.get("/category/store/:storeId", getCategoriesByStore);
+
+// Product APIs
+router.post("/product", createProduct);
+router.get("/product", getAllProducts);
+router.put("/product/:id", updateProduct);
+
+router.get(
+  "/product/store/:storeId/category/:categoryId",
+  getProductsByStoreAndCategory
+);
+router.get("/product/top-rated", getTopRatedProducts);
+router.get("/product/best-selling", getBestSellingProducts);
+
+router.get("/product/category/:catId", getProductsByCategory);
 
 // Company filters
-router.get('/filter/companies/store/:storeId', getCompaniesByStore);
-router.get('/filter/companies/category/:categoryId', getCompaniesByCategory);
-router.get('/filter/companies/store/:storeId/category/:categoryId', getCompaniesByStoreAndCategory);
+router.get("/filter/companies/store/:storeId", getCompaniesByStore);
+router.get("/filter/companies/category/:categoryId", getCompaniesByCategory);
+router.get(
+  "/filter/companies/store/:storeId/category/:categoryId",
+  getCompaniesByStoreAndCategory
+);
 
 // Type filters
-router.get('/filter/types/store/:storeId', getTypesByStore);
-router.get('/filter/types/category/:categoryId', getTypesByCategory);
+router.get("/filter/types/store/:storeId", getTypesByStore);
+router.get("/filter/types/category/:categoryId", getTypesByCategory);
 
 // Color filters
-router.get('/filter/colors/store/:storeId', getColorsByStore);
+router.get("/filter/colors/store/:storeId", getColorsByStore);
 
 // Size filters
-router.get('/filter/sizes/store/:storeId', getSizesByStore);
-
-
-
-//order 
-
-import {
-  createOrder,
-  getOrdersByUser,
-  getActiveOrders,
-  cancelOrder,
-  getOrderStatus
-} from '../controller/orderController.js';
-
+router.get("/filter/sizes/store/:storeId", getSizesByStore);
 
 // Order routes
-router.post('/order', createOrder);
-router.get('/order/user/:userId', getOrdersByUser);
-router.get('/order/user/:userId/active', getActiveOrders);
-router.post('/order/:orderId/cancel', cancelOrder);
-router.get('/order/:orderId/status', getOrderStatus);
+router.post("/order", createOrder);
+router.get("/order/user/:userId", getOrdersByUser);
+router.get("/order/user/:userId/active", getActiveOrders);
+router.post("/order/:orderId/cancel", cancelOrder);
+router.get("/order/:orderId/status", getOrderStatus);
+
+//store
+
+router.post("/stores", createStore); // Create store
+router.put("/stores/:id", updateStore); // Update store
+router.get("/stores", getAllStoresWithDetails); // Get all with details (already exists)
+
+//offers
+
+router.post("/offers", createOffer);
+router.get("/offers", getOffers);
+
+//brands
+router.post("/brands", createBrand);
+router.get("/brands", getAllBrands);
+
+//ads 
+
+router.post('/ads', createAd);
+router.get('/ads', getAllAds);
 
 
 
 
 
 
+//sliders 
 
 
+router.post('/slider1', createSlider1);
+router.get('/slider1', getSlider1);
 
+router.post('/slider2', createSlider2);
+router.get('/slider2', getSlider2);
 
+router.post('/slider3', createSlider3);
+router.get('/slider3', getSlider3);
 
-
-//store 
-
-import {
-  createStore,
-  updateStore,
-  getAllStoresWithDetails
-} from '../controller/storeController.js';
-
-router.post('/stores', createStore);         // Create store
-router.put('/stores/:id', updateStore);      // Update store
-router.get('/stores', getAllStoresWithDetails); // Get all with details (already exists)
-
-
+router.post('/slider4', createSlider4);
+router.get('/slider4', getSlider4);
 
 
 
