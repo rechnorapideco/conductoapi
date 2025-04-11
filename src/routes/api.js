@@ -48,12 +48,10 @@ import {
   getCategoriesByStore,
 } from "../controller/categoryController.js";
 
-import { createAd, getAllAds } from '../controllers/adController.js';
+import { createAd, getAllAds } from '../controller/adController.js';
 import {
   createSlider1, getSlider1,
-  createSlider2, getSlider2,
-  createSlider3, getSlider3,
-  createSlider4, getSlider4
+
 } from '../controller/sliderController.js';
 
 
@@ -163,14 +161,7 @@ router.get('/ads', getAllAds);
 router.post('/slider1', createSlider1);
 router.get('/slider1', getSlider1);
 
-router.post('/slider2', createSlider2);
-router.get('/slider2', getSlider2);
 
-router.post('/slider3', createSlider3);
-router.get('/slider3', getSlider3);
-
-router.post('/slider4', createSlider4);
-router.get('/slider4', getSlider4);
 
 
 
