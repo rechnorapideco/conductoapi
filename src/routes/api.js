@@ -22,7 +22,7 @@ import {
   getActiveOrders,
   cancelOrder,
   getOrderStatus,
-  getCategoryById,
+
 } from "../controller/orderController.js";
 import { createBrand, getAllBrands } from "../controller/brandController.js";
 import { createOffer, getOffers } from "../controller/offerController.js";
@@ -47,6 +47,7 @@ import {
   getAllCategories,
   updateCategory,
   getCategoriesByStore,
+  getCategoryById 
 } from "../controller/categoryController.js";
 
 import { createAd, getAllAds } from '../controller/adController.js';
