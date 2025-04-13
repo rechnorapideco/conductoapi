@@ -1,4 +1,5 @@
 import express from "express";
+import Category from '../model/Category.js';
 import {
   registerUser,
   loginUser,
@@ -94,6 +95,15 @@ router.get('/category/:id', getCategoryById);
 router.get("/category", getAllCategories);
 router.put("/category/:id", updateCategory);
 router.get("/category/store/:storeId", getCategoriesByStore);
+
+router.get('/dev/drop-category-index', async (req, res) => {
+  try {
+    await Category.collection.dropIndex("categoryId_1");
+    res.json({ message: "Index categoryId_1 dropped successfully ✅" });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
 
 // Product APIs
 router.post("/product", createProduct);
