@@ -22,6 +22,7 @@ import {
   getActiveOrders,
   cancelOrder,
   getOrderStatus,
+  getCategoryById,
 } from "../controller/orderController.js";
 import { createBrand, getAllBrands } from "../controller/brandController.js";
 import { createOffer, getOffers } from "../controller/offerController.js";
@@ -87,6 +88,8 @@ router.post("/user/reset-password", resetPassword);
 
 // Category APIs
 router.post("/category", createCategory);
+router.get('/category/:id', getCategoryById);
+
 router.get("/category", getAllCategories);
 router.put("/category/:id", updateCategory);
 router.get("/category/store/:storeId", getCategoriesByStore);
