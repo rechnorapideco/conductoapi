@@ -1,3 +1,5 @@
+import mongoose from 'mongoose';
+
 const storeSchema = new mongoose.Schema({
   name: String,
   phone: String,
@@ -30,3 +32,6 @@ const storeSchema = new mongoose.Schema({
   colors: [String],
   sizes: [String]
 });
+
+const Store = mongoose.model('Store', storeSchema);
+export default Store;
