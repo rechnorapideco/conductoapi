@@ -7,7 +7,9 @@ const storeSchema = new mongoose.Schema({
     lat: { type: Number, required: true },
     lng: { type: Number, required: true }
   },
-  status: { type: String, default: "open" } // open or closed
+  status: { type: String, default: "open" },
+  categories: [Object], // 💾 Save full category object
+  products: [Object]    // 💾 Save full product object
 }, { timestamps: true });
 
 const Store = mongoose.model('Store', storeSchema);
