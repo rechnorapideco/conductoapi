@@ -1,13 +1,45 @@
 import Product from '../model/Product.js';
+import Store from '../model/Store.js';
 
-// ✅ Create Product
 export const createProduct = async (req, res) => {
   try {
     if (req.body.images && req.body.images.length > 10) {
       return res.status(400).json({ error: "Maximum 10 images allowed" });
     }
 
-    const product = await Product.create(req.body);
+    const { storeId, ...productData } = req.body;
+    
+    if (!storeId) {
+      return res.status(400).json({ error: "storeId is required" });
+    }
+
+    const product = await Product.create({ ...productData, storeId });
+    
+    // Update the store with this new product (as embedded document)
+    await Store.findByIdAndUpdate(
+      storeId,
+      { 
+        $push: { 
+          products: {
+            _id: product._id,
+            name: product.name,
+            price: product.price,
+            // include other product fields you want to store
+            images: product.images || [],
+            type: product.type || null,
+            company: product.company || null
+          } 
+        },
+        $addToSet: {
+          types: product.type,
+          companies: product.company,
+          colors: product.color,
+          sizes: product.size
+        }
+      },
+      { new: true }
+    );
+    
     res.status(201).json(product);
   } catch (error) {
     res.status(500).json({ error: error.message });

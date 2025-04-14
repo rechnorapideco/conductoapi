@@ -35,35 +35,23 @@ export const createStore = async (req, res) => {
 // ✅ Get All Stores (with categories, types, etc.)
 export const getAllStoresWithDetails = async (req, res) => {
   try {
-    const stores = await Store.find();
-
-    const result = await Promise.all(stores.map(async (store) => {
-        const categories = await Category.find({ storeId: store._id });
-        const types = await Product.distinct('type', { storeId: store._id });
-        const companies = await Product.distinct('company', { storeId: store._id });
-        const colors = await Product.distinct('color', { storeId: store._id });
-        const sizes = await Product.distinct('size', { storeId: store._id });
-      
-        return {
-          _id: store._id,
-          name: store.name,
-          phone: store.phone,
-          status: store.status,
-          location: {
-            lat: store.location?.lat,
-            lng: store.location?.lng
-          },
-          categories,
-          types,
-          companies,
-          colors,
-          sizes
-        };
-      }));
-      
-
+    const stores = await Store.find().lean();
+    
+    const result = stores.map(store => ({
+      _id: store._id,
+      name: store.name,
+      phone: store.phone,
+      status: store.status,
+      location: store.location,
+      categories: store.categories || [],
+      products: store.products || [],
+      types: store.types || [],
+      companies: store.companies || [],
+      colors: store.colors || [],
+      sizes: store.sizes || []
+    }));
+    
     res.json(result);
-
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

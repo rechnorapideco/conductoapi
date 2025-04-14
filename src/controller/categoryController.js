@@ -1,15 +1,39 @@
 import Category from '../model/Category.js';
+import Store from '../model/Store.js';
 
-// ✅ Create Category
+
 export const createCategory = async (req, res) => {
   try {
-    const category = await Category.create(req.body);
+    const { storeId, ...categoryData } = req.body;
+    
+    if (!storeId) {
+      return res.status(400).json({ error: "storeId is required" });
+    }
+
+    const category = await Category.create({ ...categoryData, storeId });
+    
+    // Update the store with this new category (as embedded document)
+    await Store.findByIdAndUpdate(
+      storeId,
+      { 
+        $push: { 
+          categories: {
+            _id: category._id,
+            name: category.name,
+            // include other category fields you want to store
+            description: category.description || null,
+            image: category.image || null
+          } 
+        } 
+      },
+      { new: true }
+    );
+    
     res.status(201).json(category);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
-
 // ✅ Get All Categories
 export const getAllCategories = async (req, res) => {
   try {

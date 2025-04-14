@@ -1,16 +1,32 @@
-import mongoose from 'mongoose';
-
 const storeSchema = new mongoose.Schema({
-  name: { type: String, required: true },
+  name: String,
   phone: String,
   location: {
-    lat: { type: Number, required: true },
-    lng: { type: Number, required: true }
+    lat: Number,
+    lng: Number
   },
-  status: { type: String, default: "open" },
-  categories: [Object], // 💾 Save full category object
-  products: [Object]    // 💾 Save full product object
-}, { timestamps: true });
-
-const Store = mongoose.model('Store', storeSchema);
-export default Store;
+  status: String,
+  // Embedded categories array
+  categories: [{
+    _id: mongoose.Schema.Types.ObjectId,
+    name: String,
+    description: String,
+    image: String
+    // other category fields you want to store
+  }],
+  // Embedded products array
+  products: [{
+    _id: mongoose.Schema.Types.ObjectId,
+    name: String,
+    price: Number,
+    images: [String],
+    type: String,
+    company: String
+    // other product fields you want to store
+  }],
+  // Distinct values arrays
+  types: [String],
+  companies: [String],
+  colors: [String],
+  sizes: [String]
+});
