@@ -13,23 +13,14 @@ export const createProduct = async (req, res) => {
       return res.status(400).json({ error: "storeId is required" });
     }
 
+    // ✅ Create product
     const product = await Product.create({ ...productData, storeId });
-    
-    // Update the store with this new product (as embedded document)
+
+    // ✅ Update store with only product ID (not full object)
     await Store.findByIdAndUpdate(
       storeId,
-      { 
-        $push: { 
-          products: {
-            _id: product._id,
-            name: product.name,
-            price: product.price,
-            // include other product fields you want to store
-            images: product.images || [],
-            type: product.type || null,
-            company: product.company || null
-          } 
-        },
+      {
+        $push: { products: product._id },
         $addToSet: {
           types: product.type,
           companies: product.company,
@@ -39,12 +30,13 @@ export const createProduct = async (req, res) => {
       },
       { new: true }
     );
-    
+
     res.status(201).json(product);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
+
 
 // ✅ Get All Products
 export const getAllProducts = async (req, res) => {

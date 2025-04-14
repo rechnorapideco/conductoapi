@@ -17,15 +17,8 @@ const storeSchema = new mongoose.Schema({
     // other category fields you want to store
   }],
   // Embedded products array
-  products: [{
-    _id: mongoose.Schema.Types.ObjectId,
-    name: String,
-    price: Number,
-    images: [String],
-    type: String,
-    company: String
-    // other product fields you want to store
-  }],
+  products: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Product' }]
+  ,
   // Distinct values arrays
   types: [String],
   companies: [String],
