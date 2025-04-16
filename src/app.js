@@ -12,6 +12,6 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-app.use("/api", api.js);
+app.use("/api", userRoutes);
 
 export default app;
