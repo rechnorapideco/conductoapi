@@ -12,6 +12,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+<<<<<<< HEAD
 
 
 
@@ -52,5 +53,8 @@ app.use('/api/addresses', addressRoutes);
 app.use('/api/ratings', ratingRoutes);
 app.use('/api/reviews', reviewRoutes);
 app.use("/api/others/", others);
+=======
+app.use("/api", userRoutes);
+>>>>>>> b16b73d2a750ab45b471d18edd23ab635b0be070
 
 export default app;
