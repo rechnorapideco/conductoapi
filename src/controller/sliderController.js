@@ -1,4 +1,4 @@
-import Slider1 from '../model/Slider1.js';
+import Slider1 from '../models/Slider1.js';
 
 
 const createGenericSlider = (Model) => async (req, res) => {

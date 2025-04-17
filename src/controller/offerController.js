@@ -1,4 +1,4 @@
-import Offer from '../model/Offer.js';
+import Offer from '../models/Offer.js';
 
 // ✅ Create Offer Image
 export const createOffer = async (req, res) => {

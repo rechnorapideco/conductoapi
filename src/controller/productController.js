@@ -1,104 +1,61 @@
-import Product from '../model/Product.js';
-import Store from '../model/Store.js';
+import Product from '../models/Product.js';
+import Rating from '../models/Rating.js   ';
+import SubCategory from '../models/SubCategory.js';
 
 export const createProduct = async (req, res) => {
+  const { name, images, stock, price, subCategory } = req.body;
+
+  if (!subCategory) return res.status(400).json({ error: 'SubCategory ID is required' });
+
   try {
-    if (req.body.images && req.body.images.length > 10) {
-      return res.status(400).json({ error: "Maximum 10 images allowed" });
-    }
+    const existingSub = await SubCategory.findById(subCategory);
+    if (!existingSub) return res.status(404).json({ error: 'SubCategory not found' });
 
-    const { storeId, ...productData } = req.body;
-    
-    if (!storeId) {
-      return res.status(400).json({ error: "storeId is required" });
-    }
+    const product = await Product.create({ name, images, stock, price, subCategory });
 
-    // ✅ Create product
-    const product = await Product.create({ ...productData, storeId });
-
-    // ✅ Update store with only product ID (not full object)
-    await Store.findByIdAndUpdate(
-      storeId,
-      {
-        $push: { products: product._id },
-        $addToSet: {
-          types: product.type,
-          companies: product.company,
-          colors: product.color,
-          sizes: product.size
-        }
-      },
-      { new: true }
-    );
+    // Link product back to subcategory
+    existingSub.products.push(product._id);
+    await existingSub.save();
 
     res.status(201).json(product);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
   }
 };
 
 
-// ✅ Get All Products
 export const getAllProducts = async (req, res) => {
   try {
-    const products = await Product.find();
+    const products = await Product.find().populate('reviews ratings');
     res.json(products);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 };
 
-// ✅ Update Product
+export const getProductById = async (req, res) => {
+  try {
+    const product = await Product.findById(req.params.id).populate('reviews ratings');
+    if (!product) return res.status(404).json({ error: 'Product not found' });
+
+    // Auto-calculate average rating (optional)
+    const ratings = await Rating.find({ _id: { $in: product.ratings } });
+    const average = ratings.reduce((sum, r) => sum + r.count, 0) / (ratings.length || 1);
+    product.averageRating = average.toFixed(1);
+    await product.save();
+
+    res.json(product);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
 export const updateProduct = async (req, res) => {
   try {
-    const updated = await Product.findByIdAndUpdate(req.params.id, req.body, { new: true });
-    res.json(updated);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
+    const product = await Product.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    if (!product) return res.status(404).json({ error: 'Product not found' });
+    res.json(product);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
   }
 };
-
-// ✅ Get Products by Store + Category
-export const getProductsByStoreAndCategory = async (req, res) => {
-  try {
-    const { storeId, categoryId } = req.params;
-    const products = await Product.find({ storeId, categoryId });
-    res.json(products);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
-
-// ✅ Top Rated Products
-export const getTopRatedProducts = async (req, res) => {
-  try {
-    const products = await Product.find().sort({ rating: -1 }).limit(10);
-    res.json(products);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
-
-// ✅ Best Selling Products
-export const getBestSellingProducts = async (req, res) => {
-  try {
-    const products = await Product.find().sort({ soldCount: -1 }).limit(10);
-    res.json(products);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
-
-
-// ✅ Get Products by Category ID
-export const getProductsByCategory = async (req, res) => {
-    try {
-      const { catId } = req.params;
-      const products = await Product.find({ categoryId: catId });
-      res.json(products);
-    } catch (error) {
-      console.error("getProductsByCategory error:", error);
-      res.status(500).json({ error: "Server error" });
-    }
-  };
-  
