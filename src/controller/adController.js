@@ -1,4 +1,4 @@
-import Ad from '../models/Ad.js';
+import Ad from '../model/Ad.js';
 
 // ✅ Create Ad (image URL only)
 export const createAd = async (req, res) => {

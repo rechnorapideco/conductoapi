@@ -1,51 +1,80 @@
-import Category from '../models/Category.js';
-import Store from '../models/Store.js';
+import Category from '../model/Category.js';
+import Store from '../model/Store.js';
+
 
 export const createCategory = async (req, res) => {
-  const { name, image, subcategories, store } = req.body;
-
-  if (!store) return res.status(400).json({ error: 'Store ID is required' });
-
   try {
-    const existingStore = await Store.findById(store);
-    if (!existingStore) return res.status(404).json({ error: 'Store not found' });
+    const { storeId, ...categoryData } = req.body;
+    
+    if (!storeId) {
+      return res.status(400).json({ error: "storeId is required" });
+    }
 
-    const category = await Category.create({ name, image, subcategories, store });
-
-    // Optional: Push category ID into store.categories
-    existingStore.categories.push(category._id);
-    await existingStore.save();
-
+    const category = await Category.create({ ...categoryData, storeId });
+    
+    // Update the store with this new category (as embedded document)
+    await Store.findByIdAndUpdate(
+      storeId,
+      { 
+        $push: { 
+          categories: {
+            _id: category._id,
+            name: category.name,
+            // include other category fields you want to store
+            description: category.description || null,
+            image: category.image || null
+          } 
+        } 
+      },
+      { new: true }
+    );
+    
     res.status(201).json(category);
-  } catch (err) {
-    res.status(400).json({ error: err.message });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
 };
+// ✅ Get All Categories
 export const getAllCategories = async (req, res) => {
   try {
-    const categories = await Category.find().populate('subcategories');
+    const categories = await Category.find();
     res.json(categories);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
 };
 
+
+// ✅ Get Category by ID
 export const getCategoryById = async (req, res) => {
   try {
-    const category = await Category.findById(req.params.id).populate('subcategories');
-    if (!category) return res.status(404).json({ error: 'Category not found' });
+    const category = await Category.findById(req.params.id);
+    if (!category) {
+      return res.status(404).json({ error: "Category not found" });
+    }
     res.json(category);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
 };
 
+
+// ✅ Update Category
 export const updateCategory = async (req, res) => {
   try {
-    const category = await Category.findByIdAndUpdate(req.params.id, req.body, { new: true });
-    if (!category) return res.status(404).json({ error: 'Category not found' });
-    res.json(category);
-  } catch (err) {
-    res.status(400).json({ error: err.message });
+    const updated = await Category.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    res.json(updated);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// ✅ Get All Categories Under a Store
+export const getCategoriesByStore = async (req, res) => {
+  try {
+    const categories = await Category.find({ storeId: req.params.storeId });
+    res.json(categories);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
 };
